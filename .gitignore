@@ -1,0 +1,39 @@
+# ============================================================
+# G&G Support Portal — .gitignore
+# ============================================================
+
+# Ignore database config (contains credentials)
+includes/db.php
+
+# Ignore environment files
+.env
+
+# Ignore uploads (user files, attachments)
+uploads/
+
+# Ignore cache, logs, and temp files
+*.log
+*.tmp
+*.cache
+*.bak
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+
+# Ignore node modules (if you add JS packages later)
+node_modules/
+
+# Ignore composer dependencies (if PHP packages are added)
+vendor/
+
+# Ignore OS-specific files
+ehthumbs.db
+desktop.ini
+
+# Ignore Git itself
+.git/
