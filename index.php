@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-// G&G Support Portal — index.php  (Login page)
+// IT Asset and Support Management System — index.php (Login page)
 // ============================================================
 
 require_once __DIR__ . '/includes/db.php';
@@ -21,7 +21,7 @@ if (!empty($_SESSION['user_id'])) {
 
 $error = '';
 
-// ── Handle login POST right here ─────────────────────────────
+// ── Handle login POST ─────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -62,7 +62,7 @@ $logout  = isset($_GET['logout']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — G&amp;G Support Portal</title>
+    <title>Login — IT Asset and Support Management System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -74,8 +74,8 @@ $logout  = isset($_GET['logout']);
     <div class="login-card">
         <div class="login-brand">
             <span class="brand-icon-lg">⚡</span>
-            <h1>G&amp;G Support Portal</h1>
-            <p>G &amp; G Support Portal</p>
+            <h1>IT Asset and Support Management System</h1>
+            <p>Secure IT Asset & Support Portal</p>
         </div>
 
         <?php if ($timeout): ?>
@@ -86,7 +86,7 @@ $logout  = isset($_GET['logout']);
             <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <!-- Form posts to itself (index.php) — no .htaccess issues -->
+        <!-- Form posts to itself (index.php) -->
         <form method="POST" action="<?= BASE_URL ?>/index.php" class="login-form" autocomplete="on">
             <div class="form-group">
                 <label for="username">Username</label>
@@ -117,7 +117,7 @@ $logout  = isset($_GET['logout']);
             <button type="submit" class="btn btn-primary btn-full">Sign In</button>
         </form>
     </div>
-    <div class="login-footer">G&amp;G Support Portal &copy; <?= date('Y') ?></div>
+    <div class="login-footer">IT Asset and Support Management System &copy; <?= date('Y') ?></div>
 </div>
 
 </body>
