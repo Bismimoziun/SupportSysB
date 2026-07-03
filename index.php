@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-// IT Asset and Support Management System — index.php (Login page)
+// G&G Support Portal — index.php (Login page)
 // ============================================================
 
 require_once __DIR__ . '/includes/db.php';
@@ -62,7 +62,7 @@ $logout  = isset($_GET['logout']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — IT Asset and Support Management System</title>
+    <title>Login — G&G Support Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -74,7 +74,7 @@ $logout  = isset($_GET['logout']);
     <div class="login-card">
         <div class="login-brand">
             <span class="brand-icon-lg">⚡</span>
-            <h1>IT Asset and Support Management System</h1>
+            <h1>G&G Support Portal</h1>
             <p>Secure IT Asset & Support Portal</p>
         </div>
 
@@ -117,7 +117,7 @@ $logout  = isset($_GET['logout']);
             <button type="submit" class="btn btn-primary btn-full">Sign In</button>
         </form>
     </div>
-    <div class="login-footer">IT Asset and Support Management System &copy; <?= date('Y') ?></div>
+    <div class="login-footer">G&G Support Portal &copy; <?= date('Y') ?></div>
 </div>
 
 </body>
