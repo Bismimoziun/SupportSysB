@@ -819,5 +819,3 @@ code {
 
 /* ---- Text helpers ---- */
 .text-danger { color: var(--danger); }
-.text-success { color: var(--success); }
-.text-warning { color: var(--warning); }

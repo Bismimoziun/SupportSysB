@@ -1,0 +1,114 @@
+/* ============================================================
+   assets/css/tickets.css
+   Add-on styles for Module 2 — Ticket Management
+   Designed to merge with the existing style.css from G&G Portal
+   ============================================================ */
+
+/* ---- Badges ---- */
+.badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:.75rem; font-weight:600; letter-spacing:.4px; }
+.badge-open        { background:#e8f4fd; color:#1565c0; }
+.badge-progress    { background:#fff8e1; color:#f57f17; }
+.badge-resolved    { background:#e8f5e9; color:#2e7d32; }
+.badge-unresolved  { background:#fce4ec; color:#c62828; }
+.badge-unattended  { background:#f3e5f5; color:#6a1b9a; }
+
+/* ---- Filter chips ---- */
+.filter-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.25rem; }
+.chip { display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:20px;
+        background:#f1f3f5; color:#495057; font-size:.85rem; text-decoration:none; border:2px solid transparent;
+        transition:all .15s; }
+.chip:hover   { background:#e9ecef; border-color:#adb5bd; }
+.chip-active  { background:#1565c0; color:#fff; border-color:#1565c0; }
+.chip-count   { background:rgba(255,255,255,.3); border-radius:10px; padding:0 6px; font-size:.75rem; }
+.chip-active .chip-count { background:rgba(255,255,255,.25); }
+
+/* ---- Table highlights ---- */
+.row-breach { background:#fff8f8 !important; }
+.td-breach  { color:#c62828; font-weight:600; }
+
+/* ---- Detail grid ---- */
+.detail-grid { display:grid; grid-template-columns:1fr 380px; gap:1.25rem; align-items:start; }
+@media (max-width:900px) { .detail-grid { grid-template-columns:1fr; } }
+
+.detail-card { }
+.side-panel  { display:flex; flex-direction:column; gap:1rem; }
+.action-card { }
+
+/* ---- Detail list (dl/dt/dd) ---- */
+.detail-list { display:grid; grid-template-columns:140px 1fr; gap:4px 12px; margin-bottom:1rem; }
+.detail-list dt { color:#6c757d; font-size:.85rem; font-weight:600; padding-top:2px; }
+.detail-list dd { margin:0; font-size:.9rem; }
+
+/* ---- Description boxes ---- */
+.description-box { background:#f8f9fa; border-left:4px solid #1565c0; border-radius:0 6px 6px 0;
+                   padding:12px 16px; margin-top:1rem; }
+.description-box h4 { margin:0 0 6px; font-size:.8rem; color:#6c757d; text-transform:uppercase; letter-spacing:.5px; }
+.description-box p  { margin:0; line-height:1.6; }
+.resolution-box { border-left-color:#2e7d32; }
+
+/* ---- Activity Trail ---- */
+.trail { position:relative; padding-left:24px; }
+.trail::before { content:''; position:absolute; left:7px; top:0; bottom:0; width:2px; background:#dee2e6; }
+.trail-item { position:relative; margin-bottom:16px; }
+.trail-dot  { position:absolute; left:-20px; top:4px; width:12px; height:12px;
+              border-radius:50%; background:#adb5bd; border:2px solid #fff; }
+.trail-body { font-size:.85rem; line-height:1.5; }
+.trail-body small { color:#6c757d; }
+
+.trail-raised     .trail-dot { background:#1565c0; }
+.trail-assigned   .trail-dot { background:#fb8c00; }
+.trail-taken_up   .trail-dot { background:#00897b; }
+.trail-escalated  .trail-dot { background:#e53935; }
+.trail-resolved   .trail-dot { background:#43a047; }
+.trail-unresolved .trail-dot { background:#d81b60; }
+.trail-unattended .trail-dot { background:#8e24aa; }
+.trail-extended   .trail-dot { background:#f9a825; }
+
+/* ---- Level blocks (config page) ---- */
+.level-block  { border:1px solid #dee2e6; border-radius:8px; padding:14px 18px; margin-bottom:14px; }
+.level-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.level-header .meta { margin-left:10px; font-size:.8rem; color:#6c757d; }
+.level-actions{ display:flex; gap:6px; }
+.level-admins { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.label-sm     { font-size:.8rem; color:#6c757d; font-weight:600; }
+
+.admin-chip   { display:inline-flex; align-items:center; gap:4px; background:#e3f2fd;
+                color:#1565c0; border-radius:14px; padding:3px 10px; font-size:.82rem; }
+.chip-remove  { background:none; border:none; color:#1565c0; font-size:1rem; cursor:pointer; padding:0 2px; line-height:1; }
+.chip-remove:hover { color:#c62828; }
+
+.inline-form  { display:flex; align-items:center; gap:6px; }
+.form-control-sm { padding:4px 8px; font-size:.82rem; }
+.form-row     { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+/* ---- Extension rows ---- */
+.ext-row { border-left:3px solid #f9a825; padding:8px 12px; margin-bottom:10px;
+           background:#fffde7; border-radius:0 6px 6px 0; font-size:.85rem; line-height:1.6; }
+
+/* ---- Checkbox row ---- */
+.checkbox-row { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; font-size:.9rem; }
+.checkbox-row label { display:flex; align-items:center; gap:8px; cursor:pointer; }
+
+/* ---- Btn row ---- */
+.btn-row { display:flex; gap:8px; }
+.btn-full { width:100%; }
+
+/* ---- Card header row ---- */
+.card-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.card-header-row h2 { margin:0; }
+
+/* ---- Alert ---- */
+.alert { padding:12px 16px; border-radius:6px; margin-bottom:1rem; font-size:.9rem; }
+.alert-success { background:#e8f5e9; color:#2e7d32; border-left:4px solid #43a047; }
+.alert-error   { background:#fce4ec; color:#c62828; border-left:4px solid #e53935; }
+
+/* ---- Form msg ---- */
+.form-msg { padding:10px 14px; border-radius:6px; font-size:.9rem; }
+.msg-success { background:#e8f5e9; color:#2e7d32; }
+.msg-error   { background:#fce4ec; color:#c62828; }
+
+/* ---- Req star ---- */
+.req { color:#c62828; }
+
+/* ---- Empty msg ---- */
+.empty-msg { color:#6c757d; text-align:center; padding:2rem; }
