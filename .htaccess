@@ -1,0 +1,31 @@
+# ============================================================
+# G&G Support Portal — .htaccess
+# ============================================================
+
+Options -Indexes
+Options -MultiViews
+
+# Block direct browser access to includes/ — but ALLOW AJAX endpoints
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Allow these includes to be called via AJAX/POST/GET
+    RewriteRule ^includes/search\.php$          - [L]
+    RewriteRule ^includes/submit_flag\.php$     - [L]
+    RewriteRule ^includes/submit_answer\.php$   - [L]
+    RewriteRule ^includes/get_categories\.php$  - [L]
+    RewriteRule ^includes/get_stats\.php$       - [L]
+    RewriteRule ^includes/upload_image\.php$    - [L]
+    RewriteRule ^includes/raise_ticket\.php$    - [L]
+    RewriteRule ^includes/ticket_action\.php$   - [L]
+    RewriteRule ^includes/ai_chat\.php$         - [L]     
+
+    # Block everything else in includes/ from direct browser access
+    RewriteRule ^includes/(.*)$  - [F,L]
+</IfModule>
+
+# Block access to sensitive file types
+<FilesMatch "\.(sql|log|env|sh|bak|git)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
