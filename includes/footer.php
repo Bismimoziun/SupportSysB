@@ -9,7 +9,7 @@
 if (!empty($_SESSION['user_id'])): ?>
 
 <!-- ── AI Chat FAB (Floating Action Button) ───────────────── -->
-<button id="ai-chat-fab" class="ai-chat-fab" title="Ask the AI Assistant" aria-label="Open AI Assistant">
+<button id="ai-chat-fab" class="ai-chat-fab" type="button" title="Ask the AI Assistant" aria-label="Open AI Assistant" aria-controls="ai-chat-widget" aria-expanded="false">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </svg>
@@ -17,7 +17,7 @@ if (!empty($_SESSION['user_id'])): ?>
 </button>
 
 <!-- ── Chat Widget Panel ──────────────────────────────────── -->
-<div id="ai-chat-widget" class="ai-chat-widget ai-chat-hidden" role="dialog" aria-label="AI Support Assistant">
+<div id="ai-chat-widget" class="ai-chat-widget ai-chat-hidden" role="dialog" aria-label="AI Support Assistant" aria-modal="false" data-endpoint="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/includes/ai_chat.php">
 
     <!-- Header -->
     <div class="ai-chat-header">
@@ -34,12 +34,12 @@ if (!empty($_SESSION['user_id'])): ?>
             </div>
         </div>
         <div class="ai-chat-header-actions">
-            <button id="ai-chat-clear" class="ai-chat-icon-btn" title="Clear conversation">
+            <button id="ai-chat-clear" class="ai-chat-icon-btn" type="button" title="Clear conversation" aria-label="Clear conversation">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
                 </svg>
             </button>
-            <button id="ai-chat-close" class="ai-chat-icon-btn" title="Close">
+            <button id="ai-chat-close" class="ai-chat-icon-btn" type="button" title="Close assistant" aria-label="Close assistant">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -73,7 +73,7 @@ if (!empty($_SESSION['user_id'])): ?>
             rows="1"
             maxlength="1000"
             aria-label="Your question"></textarea>
-        <button id="ai-chat-send" class="ai-chat-send-btn" title="Send (Enter)">
+        <button id="ai-chat-send" class="ai-chat-send-btn" type="button" title="Send (Enter)" aria-label="Send message">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
             </svg>
@@ -86,9 +86,9 @@ if (!empty($_SESSION['user_id'])): ?>
 
 <?php endif; ?>
 
-<script src="<?= BASE_URL ?>/assets/js/main.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/main.js?v=<?= filemtime(__DIR__ . '/../assets/js/main.js') . '-' . filesize(__DIR__ . '/../assets/js/main.js') ?>"></script>
 <?php if (!empty($_SESSION['user_id'])): ?>
-<script src="<?= BASE_URL ?>/assets/js/ai_chat.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/ai_chat.js?v=<?= filemtime(__DIR__ . '/../assets/js/ai_chat.js') . '-' . filesize(__DIR__ . '/../assets/js/ai_chat.js') ?>"></script>
 <?php endif; ?>
 </body>
 </html>

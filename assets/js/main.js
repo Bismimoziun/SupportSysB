@@ -39,8 +39,20 @@ document.addEventListener('keydown', function (e) {
 
 /* ── Mobile sidebar toggle ───────────────────────────────── */
 const _toggleBtn = document.getElementById('sidebarToggle');
+const _collapseBtn = document.getElementById('sidebarCollapse');
 const _sidebar   = document.getElementById('sidebar');
 const _overlay   = document.getElementById('sidebarOverlay');
+const _layout    = document.querySelector('.layout');
+
+if (_collapseBtn && _layout) {
+    _collapseBtn.addEventListener('click', function () {
+        const isCollapsed = _layout.classList.toggle('sidebar-collapsed');
+        _collapseBtn.setAttribute('aria-expanded', String(!isCollapsed));
+        _collapseBtn.setAttribute('aria-label', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        _collapseBtn.title = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+        _collapseBtn.querySelector('span').textContent = isCollapsed ? '➡️' : '⬅️';
+    });
+}
 
 function closeSidebar() {
     if (_sidebar)  _sidebar.classList.remove('open');

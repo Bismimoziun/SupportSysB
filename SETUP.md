@@ -101,8 +101,8 @@ Login with:
 
 Only needed if you want the AI chat feature. The portal works perfectly fine without it — skip this entire part if you don't need AI.
 
-### 1. Install Python 3.11
-- Download from **https://www.python.org/downloads/release/python-3110/**
+### 1. Install Python 3.12
+- Download from **https://www.python.org/downloads/release/python-3120/**
 - During install ✅ check **"Add Python to PATH"**
 - Click **Install Now**
 
@@ -114,7 +114,7 @@ Only needed if you want the AI chat feature. The portal works perfectly fine wit
 ollama serve
 ```
 
-Open a **second** Command Prompt window and run:
+Keep that window open. In a **second** Command Prompt window, download the required models:
 
 ```bash
 ollama pull nomic-embed-text
@@ -128,12 +128,12 @@ ollama pull llama3
 Open Command Prompt and run:
 
 ```bash
-cd C:\xampp\htdocs\gg-support\ai
-pip install -r requirements.txt
-python main.py
+cd C:\xampp\htdocs\IT-Support-System\ai
+py -3.12 -m pip install -r requirements.txt
+py -3.12 main.py
 ```
 
-You should see `Uvicorn running on http://0.0.0.0:8000`
+Keep this backend window open too. The health endpoint is `http://127.0.0.1:8000/health`.
 
 **Keep this window open** while using the AI feature.
 
@@ -151,7 +151,7 @@ The AI chat button will now appear in the bottom-right corner for all users.
 ## 🔁 Every Time You Start the Portal
 
 1. Open **XAMPP Control Panel** → start **Apache** and **MySQL**
-2. *(If using AI)* Open Command Prompt → `cd C:\xampp\htdocs\gg-support\ai` → `python main.py`
+2. *(If using AI)* Keep Ollama running, then open Command Prompt → `cd C:\xampp\htdocs\IT-Support-System\ai` → `py -3.12 main.py`
 3. Go to **http://localhost/gg-support**
 
 ---

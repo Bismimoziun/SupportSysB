@@ -105,7 +105,7 @@ function ai_post(string $path, string $jsonBody): string {
     if ($err || $body === false) {
         return json_encode([
             'success' => false,
-            'message' => 'AI service is unreachable. Make sure the Python server is running (py -3.11 main.py).',
+            'message' => 'AI backend is offline at 127.0.0.1:8000. Start Ollama, then run "py -3.12 -m pip install -r requirements.txt" and "py -3.12 main.py" from the project ai folder. Setup details are in README.md.',
         ]);
     }
     return $body;

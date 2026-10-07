@@ -3,6 +3,10 @@
 A role-based internal support portal built with PHP, MySQL, and vanilla JavaScript.
 Designed for government and public sector organisations.
 
+> **Full project guide:** see [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md)
+> for the abstract, architecture, role workflows, database reference, setup,
+> migrations, verification steps, and troubleshooting.
+
 ---
 
 ## ✨ Features
@@ -30,7 +34,7 @@ Designed for government and public sector organisations.
 | Frontend     | HTML5, CSS3, JavaScript           |
 | Rich Text    | TinyMCE 6                         |
 | Web Server   | Apache (XAMPP)                    |
-| AI Backend   | Python 3.11, FastAPI, LangChain   |
+| AI Backend   | Python 3.12, FastAPI, LangChain   |
 | Vector Store | ChromaDB                          |
 | Local LLM    | Ollama (llama3 / any GGUF model)  |
 
@@ -228,6 +232,11 @@ Download from [https://ollama.com](https://ollama.com) and run:
 
 ```bash
 ollama serve
+```
+
+Keep that terminal running. In a second terminal, download both required models:
+
+```bash
 ollama pull nomic-embed-text   # embedding model
 ollama pull llama3             # LLM (or deepseek-r1, mistral, phi4, etc.)
 ```
@@ -235,12 +244,12 @@ ollama pull llama3             # LLM (or deepseek-r1, mistral, phi4, etc.)
 **2. Start the Python backend**
 
 ```bash
-cd ai/
-pip install -r requirements.txt
-python main.py
+cd C:\xampp\htdocs\IT-Support-System\ai
+py -3.12 -m pip install -r requirements.txt
+py -3.12 main.py
 ```
 
-The service listens on `http://localhost:8000` (internal only — never exposed to the browser).
+Keep Ollama running in its terminal while the Python backend runs in this one. The service listens on `http://127.0.0.1:8000` (internal only — never exposed to the browser). Check that it is running at `http://127.0.0.1:8000/health`.
 
 **3. Index your solutions**
 
@@ -263,7 +272,7 @@ Edit `ai/main.py`:
 LLM_MODEL = "llama3"   # change to: deepseek-r1, mistral, phi4, qwen3, etc.
 ```
 
-Then restart `python main.py`.
+Then restart `py -3.12 main.py`.
 
 ### Architecture
 
@@ -295,6 +304,7 @@ Browser renders bubble in chat widget
 |------|---------|-------------|
 | `database_setup.sql` | Core tables (users, solutions, categories, announcements) | First — always |
 | `ticket_schema.sql` | Ticket system tables + seed data | Second — always |
+| `ticket_level_active_migration.sql` | Adds level enable/disable support to an existing ticket database | Once, if `ticket_schema.sql` was already run before this column was added |
 | `ai_chat_migration.sql` | Optional AI chat logging table | Only if you want chat logs |
 | `sla_settings_migration.sql` | SLA throttle table | If you see SLA-related errors |
 | `fix_escalation_spam.sql` | One-time fix for duplicate escalation entries | Only if needed |

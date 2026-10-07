@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS ticket_levels (
     level_order INT NOT NULL DEFAULT 1,        -- 1 = first to receive
     attend_sla  INT NOT NULL DEFAULT 60,       -- minutes allowed to attend
     resolve_sla INT NOT NULL DEFAULT 120,      -- minutes allowed to resolve
+    is_active   TINYINT(1) NOT NULL DEFAULT 1,
     created_by  INT NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES users(id)

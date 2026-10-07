@@ -62,18 +62,18 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <!-- ── Always-visible action buttons ────────────────────── -->
-<div style="max-width:760px;margin:.75rem auto 0;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
-    <button class="btn btn-warning" style="padding:.6rem 1.5rem;" onclick="openModal('raise-ticket-modal')">🚩 Raise a Ticket</button>
-    <button class="btn btn-success" style="padding:.6rem 1.5rem;" onclick="openModal('answerModal')">💡 Submit a Solution</button>
+<div class="user-home-actions">
+    <button class="btn btn-warning" onclick="openModal('raise-ticket-modal')">🚩 Raise a Ticket</button>
+    <button class="btn btn-success" onclick="openModal('answerModal')">💡 Submit a Solution</button>
 </div>
 
 <div id="searchResults" class="search-results hidden"></div>
 
 <!-- ── No Results inline panel ──────────────────────────── -->
-<div id="noResultsPanel" style="display:none;max-width:760px;margin:.75rem auto 0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.25rem 2rem;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.07);">
-    <div style="font-size:1.75rem;margin-bottom:.35rem;">😔</div>
-    <p style="font-weight:600;font-size:1rem;margin:0 0 .25rem;">No results found for "<span id="noResultsTerm"></span>"</p>
-    <p style="color:#64748b;font-size:.875rem;margin:0;">Try different keywords or use the buttons above.</p>
+<div id="noResultsPanel" class="no-results-panel">
+    <div class="no-results-icon" aria-hidden="true">😔</div>
+    <p class="no-results-title">No results found for "<span id="noResultsTerm"></span>"</p>
+    <p class="no-results-hint">Try different keywords or use the buttons above.</p>
 </div>
 
 <!-- ── Ticket Modal ────────────────────────────────────────── -->

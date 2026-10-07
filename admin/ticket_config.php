@@ -90,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $levels  = $pdo->query("SELECT * FROM ticket_levels ORDER BY level_order ASC")->fetchAll(PDO::FETCH_ASSOC);
 $reasons = $pdo->query("SELECT * FROM ticket_extension_reasons ORDER BY reason_text")->fetchAll(PDO::FETCH_ASSOC);
 $admins  = $pdo->query("SELECT id, full_name FROM users WHERE role IN ('admin','system_admin') AND is_active=1 ORDER BY full_name")->fetchAll(PDO::FETCH_ASSOC);
+$hasLevelActiveColumn = (bool)$pdo->query("SHOW COLUMNS FROM ticket_levels LIKE 'is_active'")->fetch(PDO::FETCH_ASSOC);
 
 $levelAdmins = [];
 foreach ($pdo->query("SELECT tla.*, u.full_name FROM ticket_level_admins tla INNER JOIN users u ON u.id=tla.user_id")->fetchAll() as $row) {
@@ -100,32 +101,6 @@ $csrf = csrf_generate(); // real function from csrf.php
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<style>
-.tc-header-row  { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
-.tc-header-row h2 { margin:0; }
-.level-block    { border:1px solid #e9ecef; border-radius:8px; padding:14px 18px; margin-bottom:14px; background:#fafafa; }
-.level-top      { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-.level-meta     { font-size:.78rem; color:#6c757d; margin-top:3px; }
-.level-btns     { display:flex; gap:6px; flex-shrink:0; }
-.level-admins   { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding-top:8px; border-top:1px solid #eee; }
-.admin-chip     { display:inline-flex; align-items:center; gap:4px; background:#dbeafe; color:#1d4ed8;
-                  border-radius:14px; padding:3px 10px 3px 12px; font-size:.82rem; }
-.chip-x         { background:none; border:none; color:#1d4ed8; font-size:1.1rem; cursor:pointer; padding:0 2px; line-height:1; }
-.chip-x:hover   { color:#dc2626; }
-.assign-row     { display:inline-flex; gap:6px; align-items:center; }
-.assign-row select { padding:4px 8px; font-size:.82rem; border:1px solid #ced4da; border-radius:6px; }
-.lbl-sm         { font-size:.78rem; color:#6c757d; font-weight:600; flex-shrink:0; }
-.form-row3      { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-.level-block.disabled { opacity:.6; background:#f8f8f8; border-color:#ddd; }
-.btn-warning    { background:#f59e0b; color:#fff; border:none; }
-.btn-warning:hover { background:#d97706; }
-.btn-success-sm { background:#16a34a; color:#fff; border:none; }
-.btn-success-sm:hover { background:#15803d; }
-.disabled-badge { display:inline-flex; align-items:center; gap:4px; background:#fee2e2;
-                  color:#dc2626; border-radius:12px; padding:2px 10px; font-size:.75rem; font-weight:600; margin-left:8px; }
-/* Modal uses classes from style.css + hidden class toggled by main.js */
-</style>
-
 <div class="tc-header-row">
   <h2 class="section-title">⚙ Ticket Configuration</h2>
   <a href="<?= BASE_URL ?>/admin/tickets.php" class="btn btn-secondary btn-sm">← Back to Tickets</a>
@@ -133,9 +108,15 @@ include __DIR__ . '/../includes/header.php';
 
 <?php if ($msg): ?><div class="alert alert-success"><?= htmlspecialchars($msg) ?></div><?php endif; ?>
 <?php if ($err): ?><div class="alert alert-error"><?= htmlspecialchars($err) ?></div><?php endif; ?>
+<?php if (!$hasLevelActiveColumn): ?>
+  <div class="alert alert-warning" role="alert">
+    <strong>Database update required:</strong> level enable/disable is unavailable until you run
+    <code>ticket_level_active_migration.sql</code> in phpMyAdmin. Existing levels will remain active.
+  </div>
+<?php endif; ?>
 
 <!-- ===== LEVELS ===== -->
-<div class="card" style="margin-bottom:1.25rem">
+<div class="card ticket-config-section">
   <div class="tc-header-row">
     <h3 style="margin:0">Admin Levels &amp; SLA</h3>
     <button class="btn btn-primary btn-sm" onclick="openLevelModal(0,'',1,60,120)">+ Add Level</button>
@@ -144,19 +125,19 @@ include __DIR__ . '/../includes/header.php';
   <?php if (empty($levels)): ?>
     <p class="empty-state">No levels configured. Add your first level above.</p>
   <?php else: ?>
-    <?php foreach ($levels as $lv): ?>
-    <div class="level-block<?= $lv['is_active'] ? '' : ' disabled' ?>">
+    <?php foreach ($levels as $lv): $levelIsActive = !$hasLevelActiveColumn || (bool)$lv['is_active']; ?>
+    <div class="level-block<?= $levelIsActive ? '' : ' disabled' ?>">
       <div class="level-top">
         <div>
           <strong><?= htmlspecialchars($lv['level_name']) ?></strong>
-          <?php if (!$lv['is_active']): ?>
+          <?php if (!$levelIsActive): ?>
             <span class="disabled-badge">⊘ Disabled</span>
           <?php endif; ?>
           <div class="level-meta">
             Order: <?= $lv['level_order'] ?> &nbsp;|&nbsp;
             Attend SLA: <strong><?= $lv['attend_sla'] ?> min</strong> &nbsp;|&nbsp;
             Resolve SLA: <strong><?= $lv['resolve_sla'] ?> min</strong>
-            <?php if (!$lv['is_active']): ?>
+            <?php if (!$levelIsActive): ?>
               &nbsp;|&nbsp;<span style="color:#dc2626">Tickets will skip this level</span>
             <?php endif; ?>
           </div>
@@ -166,15 +147,17 @@ include __DIR__ . '/../includes/header.php';
             onclick="openLevelModal(<?= $lv['id'] ?>,'<?= addslashes($lv['level_name']) ?>',<?= $lv['level_order'] ?>,<?= $lv['attend_sla'] ?>,<?= $lv['resolve_sla'] ?>)">
             Edit
           </button>
-          <form method="post" style="display:inline"
-            onsubmit="return confirm('<?= $lv['is_active'] ? 'Disable this level? New tickets will skip it.' : 'Enable this level? Tickets will be assigned here again.' ?>')">
-            <input type="hidden" name="csrf_token"  value="<?= $csrf ?>">
-            <input type="hidden" name="form_action" value="toggle_level">
-            <input type="hidden" name="level_id"    value="<?= $lv['id'] ?>">
-            <button type="submit" class="btn btn-sm <?= $lv['is_active'] ? 'btn-warning' : 'btn-success-sm' ?>">
-              <?= $lv['is_active'] ? '⊘ Disable' : '✓ Enable' ?>
-            </button>
-          </form>
+          <?php if ($hasLevelActiveColumn): ?>
+            <form method="post" style="display:inline"
+              onsubmit="return confirm('<?= $levelIsActive ? 'Disable this level? New tickets will skip it.' : 'Enable this level? Tickets will be assigned here again.' ?>')">
+              <input type="hidden" name="csrf_token"  value="<?= $csrf ?>">
+              <input type="hidden" name="form_action" value="toggle_level">
+              <input type="hidden" name="level_id"    value="<?= $lv['id'] ?>">
+              <button type="submit" class="btn btn-sm <?= $levelIsActive ? 'btn-warning' : 'btn-success-sm' ?>">
+                <?= $levelIsActive ? '⊘ Disable' : '✓ Enable' ?>
+              </button>
+            </form>
+          <?php endif; ?>
           <form method="post" style="display:inline" onsubmit="return confirm('Delete this level and all its admin assignments?')">
             <input type="hidden" name="csrf_token"  value="<?= $csrf ?>">
             <input type="hidden" name="form_action" value="delete_level">
@@ -223,7 +206,7 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <!-- ===== EXTENSION REASONS ===== -->
-<div class="card">
+<div class="card ticket-config-section">
   <div class="tc-header-row">
     <h3 style="margin:0">Time Extension Reasons</h3>
     <button class="btn btn-primary btn-sm" onclick="openReasonModal(0,'',1.0,true)">+ Add Reason</button>

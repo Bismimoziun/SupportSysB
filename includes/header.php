@@ -6,7 +6,6 @@
 $_user  = current_user();
 $_role  = $_user['role'];
 $_name  = htmlspecialchars($_user['full_name']);
-$_first = htmlspecialchars(explode(' ', $_user['full_name'])[0]); // first name only
 $_page  = basename($_SERVER['PHP_SELF']);
 
 // Greeting based on time
@@ -24,9 +23,10 @@ else                 $_greeting = 'Good evening';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') . '-' . filesize(__DIR__ . '/../assets/css/style.css') ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/tickets.css?v=<?= filemtime(__DIR__ . '/../assets/css/tickets.css') . '-' . filesize(__DIR__ . '/../assets/css/tickets.css') ?>">
     <?php if (!empty($_SESSION['user_id'])): ?>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/ai_chat.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/ai_chat.css?v=<?= filemtime(__DIR__ . '/../assets/css/ai_chat.css') . '-' . filesize(__DIR__ . '/../assets/css/ai_chat.css') ?>">
     <?php endif; ?>
 </head>
 <body>
@@ -42,73 +42,69 @@ else                 $_greeting = 'Good evening';
         <div class="sidebar-brand">
             <span class="brand-icon">⚡</span>
             <span class="brand-text">G&G Support</span>
+            <button class="sidebar-collapse" id="sidebarCollapse" type="button"
+                    aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar">
+                <span aria-hidden="true">⬅️</span>
+            </button>
         </div>
 
-       <!-- Greeting inside sidebar -->
-<div style="display:flex;align-items:center;gap:.75rem;padding:1.25rem 1.25rem 1rem;
-            border-bottom:1px solid #c4cad3d5;flex-shrink:0;">
-    <span style="font-size:1.4rem;flex-shrink:0;">👋</span>
-    <div>
-        <div style="font-size:1rem;font-weight:700;color:#f0f0f0;letter-spacing:-.01em;white-space:nowrap;">
-            <?php echo $_greeting; ?>,
-        </div>
-        <div style="font-size:1rem;font-weight:700;color:#ffffff;letter-spacing:-.01em;white-space:nowrap;">
-            <?php echo $_first; ?>!
+    <div class="sidebar-greeting">
+        <span class="greeting-wave" aria-hidden="true">👋</span>
+        <div>
+            <div class="greeting-text"><?= htmlspecialchars($_greeting) ?>,</div>
+            <div class="greeting-name"><?= $_name ?>!</div>
         </div>
     </div>
-</div>
 
-        <nav class="sidebar-nav">
+    <nav class="sidebar-nav">
 
             <?php if ($_role === 'system_admin'): ?>
-                <a href="<?= BASE_URL ?>/admin/system_dashboard.php" class="nav-item <?= $_page === 'system_dashboard.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">🏠</span> Dashboard
+                <a href="<?= BASE_URL ?>/admin/system_dashboard.php" class="nav-item <?= $_page === 'system_dashboard.php' ? 'active' : '' ?>" title="Dashboard" aria-label="Dashboard">
+                    <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/users.php" class="nav-item <?= $_page === 'users.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">👥</span> Users
+                <a href="<?= BASE_URL ?>/admin/users.php" class="nav-item <?= $_page === 'users.php' ? 'active' : '' ?>" title="Users" aria-label="Users">
+                    <span class="nav-icon">👥</span><span class="nav-label">Users</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/categories.php" class="nav-item <?= $_page === 'categories.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">📁</span> Categories
+                <a href="<?= BASE_URL ?>/admin/categories.php" class="nav-item <?= $_page === 'categories.php' ? 'active' : '' ?>" title="Categories" aria-label="Categories">
+                    <span class="nav-icon">📁</span><span class="nav-label">Categories</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/solutions.php" class="nav-item <?= $_page === 'solutions.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">💡</span> Solutions
+                <a href="<?= BASE_URL ?>/admin/solutions.php" class="nav-item <?= $_page === 'solutions.php' ? 'active' : '' ?>" title="Solutions" aria-label="Solutions">
+                    <span class="nav-icon">💡</span><span class="nav-label">Solutions</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/announcements.php" class="nav-item <?= $_page === 'announcements.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">📢</span> Announcements
+                <a href="<?= BASE_URL ?>/admin/announcements.php" class="nav-item <?= $_page === 'announcements.php' ? 'active' : '' ?>" title="Announcements" aria-label="Announcements">
+                    <span class="nav-icon">📢</span><span class="nav-label">Announcements</span>
                 </a>
                 
-                <a href="<?= BASE_URL ?>/admin/tickets.php" class="nav-item <?= $_page === 'tickets.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">🎫</span> Tickets
+                <a href="<?= BASE_URL ?>/admin/tickets.php" class="nav-item <?= $_page === 'tickets.php' ? 'active' : '' ?>" title="Tickets" aria-label="Tickets">
+                    <span class="nav-icon">🎫</span><span class="nav-label">Tickets</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/ticket_config.php" class="nav-item <?= $_page === 'ticket_config.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">⚙</span> Ticket Config
+                <a href="<?= BASE_URL ?>/admin/ticket_config.php" class="nav-item <?= $_page === 'ticket_config.php' ? 'active' : '' ?>" title="Ticket Configuration" aria-label="Ticket Configuration">
+                    <span class="nav-icon">⚙️</span><span class="nav-label">Ticket Config</span>
                 </a>
 
             <?php elseif ($_role === 'admin'): ?>
-                <a href="<?= BASE_URL ?>/admin/dashboard.php" class="nav-item <?= $_page === 'dashboard.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">🏠</span> Dashboard
+                <a href="<?= BASE_URL ?>/admin/dashboard.php" class="nav-item <?= $_page === 'dashboard.php' ? 'active' : '' ?>" title="Dashboard" aria-label="Dashboard">
+                    <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/categories.php" class="nav-item <?= $_page === 'categories.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">📁</span> Categories
+                <a href="<?= BASE_URL ?>/admin/categories.php" class="nav-item <?= $_page === 'categories.php' ? 'active' : '' ?>" title="Categories" aria-label="Categories">
+                    <span class="nav-icon">📁</span><span class="nav-label">Categories</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/solutions.php" class="nav-item <?= $_page === 'solutions.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">💡</span> Solutions
+                <a href="<?= BASE_URL ?>/admin/solutions.php" class="nav-item <?= $_page === 'solutions.php' ? 'active' : '' ?>" title="Solutions" aria-label="Solutions">
+                    <span class="nav-icon">💡</span><span class="nav-label">Solutions</span>
                 </a>
-                <a href="<?= BASE_URL ?>/admin/announcements.php" class="nav-item <?= $_page === 'announcements.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">📢</span> Announcements
+                <a href="<?= BASE_URL ?>/admin/announcements.php" class="nav-item <?= $_page === 'announcements.php' ? 'active' : '' ?>" title="Announcements" aria-label="Announcements">
+                    <span class="nav-icon">📢</span><span class="nav-label">Announcements</span>
                 </a>
-                
-                </a>
-                <a href="<?= BASE_URL ?>/admin/tickets.php" class="nav-item <?= $_page === 'tickets.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">🎫</span> Tickets
+                <a href="<?= BASE_URL ?>/admin/tickets.php" class="nav-item <?= $_page === 'tickets.php' ? 'active' : '' ?>" title="Tickets" aria-label="Tickets">
+                    <span class="nav-icon">🎫</span><span class="nav-label">Tickets</span>
                 </a>
 
             <?php else: ?>
-                <a href="<?= BASE_URL ?>/user_home.php" class="nav-item <?= $_page === 'user_home.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">🔍</span> Search
+                <a href="<?= BASE_URL ?>/user_home.php" class="nav-item <?= $_page === 'user_home.php' ? 'active' : '' ?>" title="Search" aria-label="Search">
+                    <span class="nav-icon">🔍</span><span class="nav-label">Search</span>
                 </a>
-                <a href="<?= BASE_URL ?>/user_tickets.php" class="nav-item <?= $_page === 'user_tickets.php' ? 'active' : '' ?>">
-                    <span class="nav-icon">🎫</span> My Tickets
+                <a href="<?= BASE_URL ?>/user_tickets.php" class="nav-item <?= $_page === 'user_tickets.php' ? 'active' : '' ?>" title="My Tickets" aria-label="My Tickets">
+                    <span class="nav-icon">🎫</span><span class="nav-label">My Tickets</span>
                 </a>
             <?php endif; ?>
 
@@ -122,7 +118,7 @@ else                 $_greeting = 'Good evening';
                     <div class="user-role"><?= ucfirst(str_replace('_', ' ', $_role)) ?></div>
                 </div>
             </div>
-            <a href="<?= BASE_URL ?>/logout.php" class="btn-logout">🚪 Logout</a>
+            <a href="<?= BASE_URL ?>/logout.php" class="btn-logout" title="Logout"><span aria-hidden="true">🚪</span><span class="btn-logout-label">Logout</span></a>
         </div>
     </aside>
 

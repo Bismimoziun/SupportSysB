@@ -262,6 +262,7 @@ CREATE TABLE `ticket_levels` (
   `level_order` int(11) NOT NULL DEFAULT 1,
   `attend_sla` int(11) NOT NULL DEFAULT 60,
   `resolve_sla` int(11) NOT NULL DEFAULT 120,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_by` int(10) UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -270,10 +271,10 @@ CREATE TABLE `ticket_levels` (
 -- Dumping data for table `ticket_levels`
 --
 
-INSERT INTO `ticket_levels` (`id`, `level_name`, `level_order`, `attend_sla`, `resolve_sla`, `created_by`, `created_at`) VALUES
-(1, 'Level 1', 1, 60, 120, 1, '2026-05-29 04:19:30'),
-(2, 'Level 2', 2, 90, 180, 1, '2026-05-29 04:19:30'),
-(3, 'Level 3', 3, 120, 240, 1, '2026-05-29 04:19:30');
+INSERT INTO `ticket_levels` (`id`, `level_name`, `level_order`, `attend_sla`, `resolve_sla`, `is_active`, `created_by`, `created_at`) VALUES
+(1, 'Level 1', 1, 60, 120, 1, 1, '2026-05-29 04:19:30'),
+(2, 'Level 2', 2, 90, 180, 1, 1, '2026-05-29 04:19:30'),
+(3, 'Level 3', 3, 120, 240, 1, 1, '2026-05-29 04:19:30');
 
 -- --------------------------------------------------------
 

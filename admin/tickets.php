@@ -45,20 +45,6 @@ foreach ($pdo->query("SELECT status, COUNT(*) AS cnt FROM tickets {$statsWhere} 
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<style>
-.filter-chips        { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.25rem; }
-.chip                { display:inline-flex; align-items:center; gap:5px; padding:5px 14px;
-                       border-radius:20px; background:#f1f3f5; color:#495057; font-size:.83rem;
-                       text-decoration:none; border:2px solid transparent; transition:all .15s; }
-.chip:hover          { background:#e9ecef; }
-.chip.active         { background:#1565c0; color:#fff; border-color:#1565c0; }
-.chip-count          { background:rgba(0,0,0,.12); border-radius:10px; padding:0 6px; font-size:.73rem; }
-.chip.active .chip-count { background:rgba(255,255,255,.25); }
-.row-breach          { background:#fff5f5 !important; }
-.td-breach           { color:#c62828; font-weight:600; }
-.page-header-row     { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
-</style>
-
 <div class="page-header-row">
   <h2 class="section-title">🎫 Ticket Management</h2>
   <?php if ($role === 'system_admin'): ?>

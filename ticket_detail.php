@@ -106,57 +106,10 @@ $page_title = 'Ticket #' . $id;
 include __DIR__ . '/includes/header.php';
 ?>
 
-<style>
-/* ---- Ticket detail layout ---- */
-.ticket-detail-grid   { display:grid; grid-template-columns:1fr 360px; gap:1.25rem; align-items:start; margin-top:1rem; }
-@media(max-width:900px){ .ticket-detail-grid { grid-template-columns:1fr; } }
-.side-stack           { display:flex; flex-direction:column; gap:1rem; }
-
-/* ---- Detail dl ---- */
-.detail-dl            { display:grid; grid-template-columns:130px 1fr; gap:5px 12px; }
-.detail-dl dt         { color:var(--text-muted,#6c757d); font-size:.82rem; font-weight:600; padding-top:2px; }
-.detail-dl dd         { margin:0; font-size:.88rem; }
-
-/* ---- Description box ---- */
-.desc-box             { background:var(--bg-subtle,#f8f9fa); border-left:4px solid var(--primary,#1565c0);
-                        border-radius:0 6px 6px 0; padding:12px 16px; margin-top:1rem; }
-.desc-box.resolution  { border-left-color:#2e7d32; }
-.desc-box h4          { margin:0 0 6px; font-size:.75rem; color:var(--text-muted,#6c757d); text-transform:uppercase; letter-spacing:.5px; }
-.desc-box p           { margin:0; line-height:1.6; white-space:pre-wrap; }
-
-/* ---- Activity trail ---- */
-.trail                { position:relative; padding-left:22px; }
-.trail::before        { content:''; position:absolute; left:6px; top:0; bottom:0; width:2px; background:#dee2e6; }
-.trail-item           { position:relative; margin-bottom:14px; }
-.trail-dot            { position:absolute; left:-18px; top:4px; width:10px; height:10px;
-                        border-radius:50%; background:#adb5bd; border:2px solid #fff; }
-.trail-body           { font-size:.83rem; line-height:1.5; }
-.trail-body small     { color:var(--text-muted,#6c757d); }
-.trail-raised     .trail-dot { background:#1565c0; }
-.trail-assigned   .trail-dot { background:#f57c00; }
-.trail-taken_up   .trail-dot { background:#00897b; }
-.trail-escalated  .trail-dot { background:#e53935; }
-.trail-resolved   .trail-dot { background:#43a047; }
-.trail-unresolved .trail-dot { background:#d81b60; }
-.trail-unattended .trail-dot { background:#8e24aa; }
-.trail-extended   .trail-dot { background:#f9a825; }
-
-/* ---- Extension rows ---- */
-.ext-row  { border-left:3px solid #f9a825; padding:8px 12px; margin-bottom:8px;
-            background:#fffde7; border-radius:0 5px 5px 0; font-size:.83rem; line-height:1.6; }
-
-/* ---- Checkbox group ---- */
-.check-group  { display:flex; flex-direction:column; gap:6px; margin:10px 0; font-size:.88rem; }
-.check-group label { display:flex; align-items:center; gap:8px; cursor:pointer; }
-
-/* ---- Action msg ---- */
-#action-msg { margin-top:12px; }
-</style>
-
 <!-- Back + title row -->
-<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:.5rem">
+<div class="ticket-detail-title-row">
   <a href="<?= $backUrl ?>" class="btn btn-secondary btn-sm">← Back</a>
-  <h2 style="margin:0;flex:1">Ticket #<?= $id ?> — <?= htmlspecialchars($t['title']) ?></h2>
+  <h2 class="ticket-detail-title">Ticket #<?= $id ?> — <?= htmlspecialchars($t['title']) ?></h2>
   <?= getStatusBadge($t['status']) ?>
 </div>
 
@@ -249,7 +202,7 @@ include __DIR__ . '/includes/header.php';
 
     <?php if ($isAdmin && $isMyTicket && $t['status'] === 'open' && $attendDeadlinePassed): ?>
     <!-- Deadline expired — cannot take up -->
-    <div class="card" style="border-left: 4px solid #e53935;">
+    <div class="card ticket-deadline-warning">
       <h3 style="margin-top:0;color:#e53935;">⚠ Attend Deadline Expired</h3>
       <p style="font-size:.88rem;color:#6c757d;">The attend deadline for this ticket has passed. It should be marked <strong>Unattended</strong>. No further action can be taken.</p>
     </div>
