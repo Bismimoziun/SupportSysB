@@ -101,6 +101,11 @@ configuration.
 | Re-index approved solutions for the AI assistant | No | Yes | Yes |
 | Manage user accounts and roles | No | No | Yes |
 | Configure ticket levels, SLAs, and extension reasons | No | No | Yes |
+| View own active asset allocations and requests | Yes | Yes | Yes |
+| Request an asset or its return | Yes | Yes | Yes |
+| Administer inventory, requests, allocations, maintenance, and contracts | No | Yes | Yes |
+| Configure asset categories, locations, and expiry warnings | No | No | Yes |
+| View asset audit history and organization-wide reports | No | No | Yes |
 
 Ticket access is scoped: ordinary admins primarily see tickets assigned to
 them; system administrators can see the broader ticket queue. Administrative
@@ -168,6 +173,16 @@ Ticket status values in the schema are `open`, `in_progress`, `resolved`,
 - **Ticket Configuration:** A system administrator manages support levels,
   their ordering and SLA values, admin membership, and available extension
   reasons.
+- **Assets:** Users view their own allocations and requests; admins maintain
+  inventory, review requests, allocate and inspect returns, record maintenance,
+  and manage warranty/AMC records. System admins additionally configure asset
+  categories, locations, and contract warning periods.
+
+Asset-linked tickets keep the relationship when resolved and do not have their
+ticket status or SLA changed by allocation or return. Users can select only
+assets currently allocated to them; assigned admins can correct a ticket's
+asset link. A returned item in poor or damaged condition remains unavailable
+until an administrator completes or cancels maintenance.
 
 ### 6.5 Optional AI workflow
 
@@ -219,6 +234,14 @@ copy local credentials into public documentation or commit the config file.
 | `ticket_activity` | Timestamped ticket events, actors, assignment, deadlines, and notes |
 | `ticket_extensions` | Extension reason, remarks, hours, and previous/new deadlines |
 | `round_robin_pointer` | Last admin index used for assignment at each level |
+| `asset_categories`, `asset_locations` | Configurable asset classification and location values |
+| `assets` | Asset inventory and lifecycle state |
+| `asset_requests` | User allocation/return requests and admin decisions |
+| `asset_allocations` | Current and historical allocations and return inspections |
+| `asset_maintenance` | Maintenance history and optional related ticket |
+| `asset_contracts` | Warranty and AMC coverage and expiry dates |
+| `asset_activity` | Asset workflow audit entries |
+| `asset_settings` | System-admin-configured contract warning window |
 | `sla_settings` | Throttle timestamp for the SLA check when the migration is installed |
 | `ai_chat_logs` | Optional AI chat logs; only present if its migration was run and logging is wired |
 
@@ -229,6 +252,9 @@ Important relationships include:
 - A ticket belongs to a raising user and may reference its current support level
   and assigned admin.
 - A ticket's activity rows and extension rows refer back to the ticket.
+- Asset allocation, request, maintenance, contract, and audit records refer to
+  assets and users; maintenance may also refer to a ticket. `tickets.asset_id`
+  is nullable and keeps a ticket linked to at most one asset.
 - Level assignments connect users with ticket levels.
 - Extension rows reference a configured extension reason.
 
@@ -324,12 +350,26 @@ required by the schema currently installed:
   `ticket_schema.sql` versions now include this column.
 - If the SLA throttle table is absent, run `sla_settings_migration.sql`.
 - If you need an optional AI chat log table, run `ai_chat_migration.sql`.
+- For Asset Management, first inspect the installed `users.id` and `tickets.id`
+  definitions, confirm the portal tables exist, and back up the database.
+  Apply `asset_management_migration.sql` against `knowledgebase`. It adds the
+  asset tables, standard categories, a default 30-day expiry warning, and a
+  nullable ticket-to-asset reference; it does not drop existing tables.
 - `add_time_limit_migration.sql` adds the extension time-limit field to an older
   extension-reason table; inspect the table first and run only if that field is
   missing.
 
 An `ALTER TABLE ... ADD COLUMN` migration is normally a one-time operation.
 Confirm the column/table is absent first to avoid duplicate-column errors.
+The asset migration uses `CREATE TABLE IF NOT EXISTS` and checks before adding
+the optional ticket column and request/allocation foreign key. Review its
+assumptions against the live MySQL schema before applying it:
+`database_setup.sql` uses unsigned user IDs, `ticket_schema.sql` uses a signed
+ticket ID, and the new `tickets.asset_id` matches the unsigned asset primary
+key. The active-allocation guard uses a stored generated column,
+so the target database must support generated columns and InnoDB. If an asset
+table already exists with a different layout, stop and reconcile the schema
+rather than relying on `IF NOT EXISTS`.
 
 ### 8.5 Set or reset the system administrator password
 
@@ -438,6 +478,14 @@ C:\xampp\php\php.exe -l user_home.php
 C:\xampp\php\php.exe -l ticket_detail.php
 C:\xampp\php\php.exe -l admin\dashboard.php
 C:\xampp\php\php.exe -l admin\ticket_config.php
+C:\xampp\php\php.exe -l assets.php
+C:\xampp\php\php.exe -l asset_detail.php
+C:\xampp\php\php.exe -l admin\assets.php
+C:\xampp\php\php.exe -l admin\asset_requests.php
+C:\xampp\php\php.exe -l admin\asset_allocations.php
+C:\xampp\php\php.exe -l admin\asset_maintenance.php
+C:\xampp\php\php.exe -l admin\asset_contracts.php
+C:\xampp\php\php.exe -l admin\asset_reports.php
 ```
 
 For Python syntax validation, use the selected Python 3.12 interpreter:
@@ -448,6 +496,13 @@ py -3.12 -m compileall ai\main.py
 
 The repository does not currently define a formal PHPUnit test suite. Validate
 the affected PHP syntax and manually exercise the corresponding page/workflow.
+For Asset Management, after applying the migration in a backed-up test
+database, verify a user cannot open another user's asset detail or request,
+submit and review an allocation request, allocate the same asset twice (also
+with concurrent requests), process a return in good and damaged condition,
+complete maintenance, link an asset to a ticket, and confirm ticket resolution
+does not remove that link. Check that warning and expired contract lists match
+the stored dates and configured warning period.
 
 ## 10. Project file map
 
@@ -472,11 +527,13 @@ IT-Support-System/
 │   ├── db.php                     Local-only database config; do not publish
 │   ├── auth_guard.php             Session, timeout, and role checks
 │   ├── csrf.php                   CSRF helpers
+│   ├── asset_helpers.php          Asset authorization, audit, and transaction helpers
 │   ├── header.php / footer.php    Shared page shell and AI widget
 │   ├── ticket_helpers.php         Assignment, SLA, and audit helpers
 │   └── ai_chat.php                Authenticated PHP-to-FastAPI proxy
 ├── database_setup.sql             Core tables and sample data (destructive on rerun)
 ├── ticket_schema.sql              Ticket tables and sample levels/reasons
+├── asset_management_migration.sql Additive asset tables and optional ticket link
 ├── ticket_level_active_migration.sql
 ├── sla_settings_migration.sql
 ├── add_time_limit_migration.sql
@@ -485,7 +542,16 @@ IT-Support-System/
 ├── dashboard.php                   Role-based redirect
 ├── user_home.php                   Solution search and user actions
 ├── user_tickets.php                Signed-in user's ticket history
-└── ticket_detail.php               Ticket information and permitted actions
+├── ticket_detail.php               Ticket information and permitted actions
+├── assets.php                      User's allocations and requests
+├── asset_detail.php                Role-scoped asset details and history
+└── admin/
+    ├── assets.php                  Inventory, filters, and system-admin configuration
+    ├── asset_requests.php          Request approval/rejection
+    ├── asset_allocations.php       Allocation and return processing/history
+    ├── asset_maintenance.php       Maintenance work records
+    ├── asset_contracts.php         Warranty and AMC tracking
+    └── asset_reports.php           Asset dashboard and expiry alerts
 ```
 
 ## 11. Troubleshooting

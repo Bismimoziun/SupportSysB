@@ -73,9 +73,21 @@ if (!hash_equals($_SESSION['csrf_token'], $token)) {
 $title       = trim($_POST['title']       ?? '');
 $description = trim($_POST['description'] ?? '');
 $categoryId  = !empty($_POST['category_id']) ? (int)$_POST['category_id'] : null;
+$assetId     = !empty($_POST['asset_id']) ? (int)$_POST['asset_id'] : null;
 
 if (!$title || !$description) {
     echo json_encode(['success'=>false,'message'=>'Title or description empty.']); exit;
+}
+if ($assetId) {
+    $assetCheck = $pdo->prepare(
+        "SELECT a.id FROM assets a
+         JOIN asset_allocations aa ON aa.asset_id=a.id
+         WHERE a.id=? AND aa.user_id=? AND aa.actual_return_date IS NULL"
+    );
+    $assetCheck->execute([$assetId, (int)$_SESSION['user_id']]);
+    if (!$assetCheck->fetchColumn()) {
+        echo json_encode(['success'=>false,'message'=>'You may only link an asset currently allocated to your account.']); exit;
+    }
 }
 
 // Step 7 — check ticket_levels table exists and has rows
@@ -92,8 +104,8 @@ if (!$firstLevel) {
 }
 // Step 8 — insert ticket
 try {
-    $pdo->prepare("INSERT INTO tickets (title, description, category_id, raised_by) VALUES (?,?,?,?)")
-        ->execute([$title, $description, $categoryId, $_SESSION['user_id']]);
+    $pdo->prepare("INSERT INTO tickets (title, description, category_id, raised_by, asset_id) VALUES (?,?,?,?,?)")
+        ->execute([$title, $description, $categoryId, $_SESSION['user_id'], $assetId]);
     $ticketId = (int)$pdo->lastInsertId();
 } catch (Exception $e) {
     echo json_encode(['success'=>false,'message'=>'DB error inserting ticket: '.$e->getMessage()]); exit;

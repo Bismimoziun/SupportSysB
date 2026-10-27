@@ -81,6 +81,24 @@ else                 $_greeting = 'Good evening';
                 <a href="<?= BASE_URL ?>/admin/ticket_config.php" class="nav-item <?= $_page === 'ticket_config.php' ? 'active' : '' ?>" title="Ticket Configuration" aria-label="Ticket Configuration">
                     <span class="nav-icon">⚙️</span><span class="nav-label">Ticket Config</span>
                 </a>
+                <a href="<?= BASE_URL ?>/admin/assets.php" class="nav-item <?= in_array($_page, ['assets.php', 'asset_detail.php'], true) ? 'active' : '' ?>" title="Asset Inventory" aria-label="Asset Inventory">
+                    <span class="nav-icon">💻</span><span class="nav-label">Assets</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_requests.php" class="nav-item <?= $_page === 'asset_requests.php' ? 'active' : '' ?>" title="Asset Requests" aria-label="Asset Requests">
+                    <span class="nav-icon">📥</span><span class="nav-label">Asset Requests</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_allocations.php" class="nav-item <?= $_page === 'asset_allocations.php' ? 'active' : '' ?>" title="Asset Allocations" aria-label="Asset Allocations">
+                    <span class="nav-icon">🔄</span><span class="nav-label">Allocations</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_maintenance.php" class="nav-item <?= $_page === 'asset_maintenance.php' ? 'active' : '' ?>" title="Asset Maintenance" aria-label="Asset Maintenance">
+                    <span class="nav-icon">🔧</span><span class="nav-label">Maintenance</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_contracts.php" class="nav-item <?= $_page === 'asset_contracts.php' ? 'active' : '' ?>" title="Warranty and AMC" aria-label="Warranty and AMC">
+                    <span class="nav-icon">📄</span><span class="nav-label">Warranty &amp; AMC</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_reports.php" class="nav-item <?= $_page === 'asset_reports.php' ? 'active' : '' ?>" title="Asset Reports" aria-label="Asset Reports">
+                    <span class="nav-icon">📊</span><span class="nav-label">Asset Reports</span>
+                </a>
 
             <?php elseif ($_role === 'admin'): ?>
                 <a href="<?= BASE_URL ?>/admin/dashboard.php" class="nav-item <?= $_page === 'dashboard.php' ? 'active' : '' ?>" title="Dashboard" aria-label="Dashboard">
@@ -98,6 +116,24 @@ else                 $_greeting = 'Good evening';
                 <a href="<?= BASE_URL ?>/admin/tickets.php" class="nav-item <?= $_page === 'tickets.php' ? 'active' : '' ?>" title="Tickets" aria-label="Tickets">
                     <span class="nav-icon">🎫</span><span class="nav-label">Tickets</span>
                 </a>
+                <a href="<?= BASE_URL ?>/admin/assets.php" class="nav-item <?= in_array($_page, ['assets.php', 'asset_detail.php'], true) ? 'active' : '' ?>" title="Asset Inventory" aria-label="Asset Inventory">
+                    <span class="nav-icon">💻</span><span class="nav-label">Assets</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_requests.php" class="nav-item <?= $_page === 'asset_requests.php' ? 'active' : '' ?>" title="Asset Requests" aria-label="Asset Requests">
+                    <span class="nav-icon">📥</span><span class="nav-label">Asset Requests</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_allocations.php" class="nav-item <?= $_page === 'asset_allocations.php' ? 'active' : '' ?>" title="Asset Allocations" aria-label="Asset Allocations">
+                    <span class="nav-icon">🔄</span><span class="nav-label">Allocations</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_maintenance.php" class="nav-item <?= $_page === 'asset_maintenance.php' ? 'active' : '' ?>" title="Asset Maintenance" aria-label="Asset Maintenance">
+                    <span class="nav-icon">🔧</span><span class="nav-label">Maintenance</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_contracts.php" class="nav-item <?= $_page === 'asset_contracts.php' ? 'active' : '' ?>" title="Warranty and AMC" aria-label="Warranty and AMC">
+                    <span class="nav-icon">📄</span><span class="nav-label">Warranty &amp; AMC</span>
+                </a>
+                <a href="<?= BASE_URL ?>/admin/asset_reports.php" class="nav-item <?= $_page === 'asset_reports.php' ? 'active' : '' ?>" title="Asset Reports" aria-label="Asset Reports">
+                    <span class="nav-icon">📊</span><span class="nav-label">Asset Reports</span>
+                </a>
 
             <?php else: ?>
                 <a href="<?= BASE_URL ?>/user_home.php" class="nav-item <?= $_page === 'user_home.php' ? 'active' : '' ?>" title="Search" aria-label="Search">
@@ -105,6 +141,9 @@ else                 $_greeting = 'Good evening';
                 </a>
                 <a href="<?= BASE_URL ?>/user_tickets.php" class="nav-item <?= $_page === 'user_tickets.php' ? 'active' : '' ?>" title="My Tickets" aria-label="My Tickets">
                     <span class="nav-icon">🎫</span><span class="nav-label">My Tickets</span>
+                </a>
+                <a href="<?= BASE_URL ?>/assets.php" class="nav-item <?= in_array($_page, ['assets.php', 'asset_detail.php'], true) ? 'active' : '' ?>" title="My Assets" aria-label="My Assets">
+                    <span class="nav-icon">💻</span><span class="nav-label">My Assets</span>
                 </a>
             <?php endif; ?>
 

@@ -22,6 +22,14 @@ $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $cats = $pdo->query("SELECT id, name FROM categories WHERE parent_id IS NOT NULL ORDER BY name")
             ->fetchAll(PDO::FETCH_ASSOC);
+$assetStmt = $pdo->prepare(
+    "SELECT a.id, a.asset_tag, a.name FROM asset_allocations aa
+     JOIN assets a ON a.id=aa.asset_id
+     WHERE aa.user_id=? AND aa.actual_return_date IS NULL
+     ORDER BY a.asset_tag"
+);
+$assetStmt->execute([(int)$_SESSION['user_id']]);
+$myAssets = $assetStmt->fetchAll(PDO::FETCH_ASSOC);
 
 include __DIR__ . '/includes/header.php';
 ?>
@@ -90,6 +98,15 @@ include __DIR__ . '/includes/header.php';
             <option value="">— Select Category (optional) —</option>
             <?php foreach ($cats as $c): ?>
             <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Related asset (optional)</label>
+          <select name="asset_id" class="form-control">
+            <option value="">— No related asset —</option>
+            <?php foreach ($myAssets as $asset): ?>
+            <option value="<?= (int)$asset['id'] ?>"><?= htmlspecialchars($asset['asset_tag'] . ' — ' . $asset['name']) ?></option>
             <?php endforeach; ?>
           </select>
         </div>

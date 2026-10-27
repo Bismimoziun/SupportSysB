@@ -28,6 +28,41 @@ $t->execute([$ticketId]);
 $t = $t->fetch(PDO::FETCH_ASSOC);
 if (!$t) { echo json_encode(['success' => false, 'message' => 'Ticket not found.']); exit; }
 
+if ($action === 'change_asset') {
+    if (!in_array($role, ['admin', 'system_admin'], true)) {
+        echo json_encode(['success'=>false,'message'=>'Unauthorised.']); exit;
+    }
+    if ((int)$t['current_admin'] !== (int)$userId) {
+        echo json_encode(['success'=>false,'message'=>'This ticket is not assigned to you.']); exit;
+    }
+    $assetId = filter_input(INPUT_POST, 'asset_id', FILTER_VALIDATE_INT);
+    if ($assetId === false || $assetId === null || $assetId < 0) {
+        echo json_encode(['success'=>false,'message'=>'Select a valid asset.']); exit;
+    }
+    if ($assetId > 0) {
+        $assetCheck = $pdo->prepare('SELECT id FROM assets WHERE id=?');
+        $assetCheck->execute([$assetId]);
+        if (!$assetCheck->fetchColumn()) {
+            echo json_encode(['success'=>false,'message'=>'Asset not found.']); exit;
+        }
+    }
+    $pdo->beginTransaction();
+    try {
+        $pdo->prepare('UPDATE tickets SET asset_id=? WHERE id=?')->execute([$assetId ?: null, $ticketId]);
+        logTicketActivity(
+            $pdo, $ticketId, (int)$userId, 'asset_linked', $t['current_level'], $t['current_admin'],
+            null, null, $assetId ? 'Linked asset #' . $assetId : 'Removed linked asset.'
+        );
+        $pdo->commit();
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $e;
+    }
+    echo json_encode(['success'=>true,'message'=>'Ticket asset link updated.']); exit;
+}
+
 // ---- TAKE UP ----
 if ($action === 'take_up') {
     if (!in_array($role, ['admin','system_admin'])) {

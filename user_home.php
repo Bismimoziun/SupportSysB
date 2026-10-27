@@ -18,6 +18,15 @@ $categories = $pdo->query(
     'SELECT id, name FROM categories WHERE parent_id IS NULL ORDER BY name ASC'
 )->fetchAll();
 
+$assetStmt = $pdo->prepare(
+    "SELECT a.id, a.asset_tag, a.name FROM asset_allocations aa
+     JOIN assets a ON a.id=aa.asset_id
+     WHERE aa.user_id=? AND aa.actual_return_date IS NULL
+     ORDER BY a.asset_tag"
+);
+$assetStmt->execute([(int)$_SESSION['user_id']]);
+$myAssets = $assetStmt->fetchAll();
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -96,6 +105,15 @@ require_once __DIR__ . '/includes/header.php';
             <option value="">— Select Category (optional) —</option>
             <?php foreach ($categories as $c): ?>
             <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Related asset (optional)</label>
+          <select name="asset_id" class="form-control">
+            <option value="">— No related asset —</option>
+            <?php foreach ($myAssets as $asset): ?>
+            <option value="<?= (int)$asset['id'] ?>"><?= htmlspecialchars($asset['asset_tag'] . ' — ' . $asset['name']) ?></option>
             <?php endforeach; ?>
           </select>
         </div>

@@ -13,12 +13,14 @@ $stmt = $pdo->prepare("
     SELECT t.*, tl.level_name, tl.attend_sla, tl.resolve_sla,
            u.full_name  AS assigned_admin_name,
            r.full_name  AS raiser_name,
-           c.name       AS category_name
+           c.name       AS category_name,
+           a.asset_tag, a.name AS asset_name
     FROM tickets t
     LEFT JOIN ticket_levels tl ON tl.id = t.current_level
     LEFT JOIN users u          ON u.id  = t.current_admin
     LEFT JOIN users r          ON r.id  = t.raised_by
     LEFT JOIN categories c     ON c.id  = t.category_id
+    LEFT JOIN assets a         ON a.id  = t.asset_id
     WHERE t.id = ?
 ");
 $stmt->execute([$id]);
@@ -101,6 +103,15 @@ $isAdmin    = in_array($_SESSION['role'], ['admin','system_admin']);
 // system_admin can VIEW any ticket but can only act on it if it is assigned to them
 $isMyTicket = ($t['current_admin'] == $_SESSION['user_id']);
 $backUrl    = $isAdmin ? BASE_URL . '/admin/tickets.php' : BASE_URL . '/user_tickets.php';
+$ticketAssets = [];
+if ($isAdmin && $isMyTicket) {
+    $assetOptions = $pdo->prepare(
+        "SELECT id, asset_tag, name FROM assets
+         WHERE status<>'disposed' OR id=? ORDER BY asset_tag"
+    );
+    $assetOptions->execute([(int)($t['asset_id'] ?? 0)]);
+    $ticketAssets = $assetOptions->fetchAll(PDO::FETCH_ASSOC);
+}
 
 $page_title = 'Ticket #' . $id;
 include __DIR__ . '/includes/header.php';
@@ -121,6 +132,7 @@ include __DIR__ . '/includes/header.php';
     <dl class="detail-dl">
       <dt>Raised By</dt>    <dd><?= htmlspecialchars($t['raiser_name']) ?></dd>
       <dt>Category</dt>     <dd><?= htmlspecialchars($t['category_name'] ?? '—') ?></dd>
+      <dt>Related asset</dt><dd><?php if ($t['asset_id']): ?><a href="<?= BASE_URL ?>/asset_detail.php?id=<?= (int)$t['asset_id'] ?>"><?= htmlspecialchars($t['asset_tag'] . ' — ' . $t['asset_name']) ?></a><?php else: ?>—<?php endif; ?></dd>
       <dt>Level</dt>        <dd><?= htmlspecialchars($t['level_name']    ?? '—') ?></dd>
       <dt>Assigned Admin</dt><dd><?= htmlspecialchars($t['assigned_admin_name'] ?? 'None') ?></dd>
       <dt>Attend By</dt>    <dd><?= $t['attend_deadline']  ? date('d M Y, H:i', strtotime($t['attend_deadline']))  : '—' ?></dd>
@@ -145,6 +157,26 @@ include __DIR__ . '/includes/header.php';
 
   <!-- ===== RIGHT: actions + trail ===== -->
   <div class="side-stack">
+
+    <?php if ($isAdmin && $isMyTicket): ?>
+    <div class="card">
+      <h3 style="margin-top:0">Related Asset</h3>
+      <form id="ticket-asset-form">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_generate()) ?>">
+        <input type="hidden" name="action" value="change_asset">
+        <input type="hidden" name="ticket_id" value="<?= $id ?>">
+        <label class="form-label" for="ticket-asset-id">Asset</label>
+        <select class="form-control" id="ticket-asset-id" name="asset_id">
+          <option value="0">No linked asset</option>
+          <?php foreach ($ticketAssets as $asset): ?>
+          <option value="<?= (int)$asset['id'] ?>" <?= (int)$t['asset_id']===(int)$asset['id']?'selected':'' ?>><?= htmlspecialchars($asset['asset_tag'] . ' — ' . $asset['name']) ?></option>
+          <?php endforeach; ?>
+        </select>
+        <button class="btn btn-secondary" type="submit">Update Asset Link</button>
+        <div id="ticket-asset-msg" class="alert" style="display:none"></div>
+      </form>
+    </div>
+    <?php endif; ?>
 
     <?php
     $attendDeadlinePassed = $t['attend_deadline'] && ($dbNow > new DateTime($t['attend_deadline']));
@@ -251,6 +283,33 @@ include __DIR__ . '/includes/header.php';
 
 <script>
 const TICKET_ID = <?= $id ?>;
+
+const ticketAssetForm = document.getElementById('ticket-asset-form');
+if (ticketAssetForm) {
+  ticketAssetForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const message = document.getElementById('ticket-asset-msg');
+    const button = ticketAssetForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      const response = await fetch('<?= BASE_URL ?>/includes/ticket_action.php', {
+        method: 'POST',
+        body: new FormData(ticketAssetForm)
+      });
+      const result = await response.json();
+      message.style.display = 'block';
+      message.className = 'alert ' + (result.success ? 'alert-success' : 'alert-error');
+      message.textContent = result.message;
+      if (result.success) setTimeout(() => location.reload(), 800);
+      else button.disabled = false;
+    } catch (error) {
+      message.style.display = 'block';
+      message.className = 'alert alert-error';
+      message.textContent = 'Network error. Please try again.';
+      button.disabled = false;
+    }
+  });
+}
 
 async function doAction(action) {
   const btn = event.target;
